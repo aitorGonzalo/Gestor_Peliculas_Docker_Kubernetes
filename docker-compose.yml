@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  web:
+    image: httpd:latest
+    container_name: apache_web
+    ports:
+      - "8080:80"
+    volumes:
+      - ./app:/usr/local/apache2/htdocs/
+    networks:
+      - app-network
+
+  db:
+    image: mysql:latest
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: movie_db
+      MYSQL_USER: aitor
+      MYSQL_PASSWORD: 1234
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./db-config/my.cnf:/etc/mysql/my.cnf
+      - ./db/data.csv:/var/lib/mysql-files/data.csv
+    networks:
+      - app-network
+
+  recommender:
+    image: aitorgonzalo/flask_recommender
+    container_name: movie_recommender
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_NAME: movie_db
+      DB_PASSWORD: 1234
+      DB_USER: aitor
+    networks:
+      - app-network
+    ports:
+      - "5000:5000"
+
+
+networks:
+  app-network:
+
+volumes:
+  mysql_data:  # Aquí se define el volumen mysql_data como un mapeo
