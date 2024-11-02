@@ -29,7 +29,8 @@ services:
       - app-network
 
   recommender:
-    image: aitorgonzalo/flask_recommender
+    build:
+      context: ./recommender  # Apunta a la carpeta donde está el Dockerfile
     container_name: movie_recommender
     depends_on:
       - db
@@ -43,9 +44,8 @@ services:
     ports:
       - "5000:5000"
 
-
 networks:
   app-network:
 
 volumes:
-  mysql_data:  # Aquí se define el volumen mysql_data como un mapeo
+  mysql_data:

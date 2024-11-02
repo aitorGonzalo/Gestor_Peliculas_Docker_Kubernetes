@@ -3,10 +3,369 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Movie Catalog</title>
+    <title>HboWorld - Movie Catalog</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #141414;
+            margin: 0;
+            padding: 20px;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #authSection {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        h1 {
+            color: #f4f4f9;
+            font-size: 3em;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        p {
+            font-size: 1.2em;
+            margin: 10px 0;
+            color: #cccccc;
+        }
+
+        #authButtons {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        button {
+            background-color: #e50914;
+            color: #141414;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #b0070e;
+        }
+
+        #imageContainer {
+            width: 90%;
+            max-width: 800px;
+            height: 400px;
+            background: url('galaxy-background.png') no-repeat center center;
+            background-size: cover;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            margin-top: 20px;
+        }
+
+        form {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 300px;
+            width: 100%;
+            text-align: center;
+            margin: 20px auto;
+        }
+
+        label, input, button, textarea {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        #logoutSection, #catalogSection, #searchSection {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .movie-item {
+            background-color: #e50914;
+            color: #000;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Sección de contacto */
+        #contactSection {
+            text-align: center;
+            margin-top: 40px;
+            color: #aaaaaa;
+            font-size: 0.9em;
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to the Movie Catalog!</h1>
-    <p>Explore our collection and get personalized recommendations.</p>
+
+    <div id="authSection">
+        <h1>Welcome to HboWorld!</h1>
+        <p>Movies and series without limits</p>
+
+        <div id="authButtons">
+            <button onclick="showRegister()">Register</button>
+            <button onclick="showLogin()">Login</button>
+        </div>
+    </div>
+
+    <div id="imageContainer"></div>
+
+    <!-- Formulario de Registro -->
+    <div id="registerSection" style="display: none;">
+        <h2>Register</h2>
+        <form id="registerForm">
+            <label for="registerUsername">Username:</label>
+            <input type="text" id="registerUsername" name="username">
+            <label for="registerEmail">Email:</label>
+            <input type="email" id="registerEmail" name="email">
+            <label for="registerPassword">Password:</label>
+            <input type="password" id="registerPassword" name="password">
+            <button type="button" onclick="registerUser()">Register</button>
+        </form>
+    </div>
+
+    <!-- Formulario de Inicio de Sesión -->
+    <div id="loginSection" style="display: none;">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <label for="loginUsername">Username:</label>
+            <input type="text" id="loginUsername" name="username">
+            <label for="loginPassword">Password:</label>
+            <input type="password" id="loginPassword" name="password">
+            <button type="button" onclick="loginUser()">Login</button>
+        </form>
+    </div>
+
+    <!-- Botones después del inicio de sesión -->
+    <div id="logoutSection" style="display: none;">
+        <button onclick="logoutUser()">Logout</button>
+        <button onclick="loadCatalog()">Show Movie Catalog</button>
+        <button onclick="showSearch()">Search Movie</button> <!-- Nuevo botón de búsqueda -->
+    </div>
+
+    <!-- Catálogo de Películas -->
+    <div id="catalogSection" style="display: none;">
+        <h2>Movie Catalog</h2>
+        <div id="catalog"></div>
+    </div>
+
+    <!-- Buscador de Películas -->
+    <div id="searchSection" style="display: none;">
+        <h2>Search Film</h2>
+        <form onsubmit="searchMovie(event)">
+            <label for="searchTitle">Title:</label>
+            <input type="text" id="searchTitle" name="title">
+            
+            <label for="searchGenre">Genre:</label>
+            <input type="text" id="searchGenre" name="genre">
+            
+            <label for="searchYear">Year:</label>
+            <input type="number" id="searchYear" name="year" min="1900" max="2100">
+            
+            <button type="submit">Search</button>
+        </form>
+
+        <!-- Resultados de la búsqueda -->
+        <div id="searchResults" style="margin-top: 20px;"></div>
+    </div>
+
+    <!-- Sección de contacto -->
+    <div id="contactSection">
+        <p>If you have any suggestions or need assistance, feel free to contact us!</p>
+        <p>We are always happy to hear from our users.</p>
+        <p>Phone: +34 663 644 655</p>
+        <p>Email: HboWorld@gmail.com</p>
+    </div>
+
+    <script>
+        function showRegister() {
+            document.getElementById("registerSection").style.display = "block";
+            document.getElementById("loginSection").style.display = "none";
+        }
+
+        function showLogin() {
+            document.getElementById("registerSection").style.display = "none";
+            document.getElementById("loginSection").style.display = "block";
+        }
+
+        async function registerUser() {
+            const username = document.getElementById("registerUsername").value;
+            const email = document.getElementById("registerEmail").value;
+            const password = document.getElementById("registerPassword").value;
+
+            const response = await fetch("http://localhost:5000/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, email, password })
+            });
+            const result = await response.json();
+            alert(result.message || result.error);
+        }
+
+        async function loginUser() {
+            const username = document.getElementById("loginUsername").value;
+            const password = document.getElementById("loginPassword").value;
+
+            const response = await fetch("http://localhost:5000/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password })
+            });
+            const result = await response.json();
+            alert(result.message || result.error);
+
+            if (result.message === "Login successful") {
+                localStorage.setItem("user_id", result.user_id);
+                document.getElementById("registerSection").style.display = "none";
+                document.getElementById("loginSection").style.display = "none";
+                document.getElementById("authButtons").style.display = "none";
+                document.getElementById("logoutSection").style.display = "block";
+                document.getElementById("catalogSection").style.display = "none";
+            }
+        }
+
+        async function loadCatalog() {
+            const response = await fetch("http://localhost:5000/catalog");
+            const movies = await response.json();
+
+            let catalogDiv = document.getElementById("catalog");
+            catalogDiv.innerHTML = "";
+
+            movies.forEach(movie => {
+                let movieDiv = document.createElement("div");
+                movieDiv.className = "movie-item";
+                movieDiv.innerHTML = `<h3>${movie.title}</h3>
+                                      <p>Year: ${movie.releaseYear}</p>
+                                      <p>Genre: ${movie.genres}</p>
+                                      <p>Rating: ${movie.rating}</p>
+                                      <form onsubmit="submitRating(event, ${movie.id})">
+                                          <label for="rating">Your Rating (1-10):</label>
+                                          <input type="number" id="rating_${movie.id}" name="rating" min="1" max="10" step="0.5" required>
+                                          <label for="comment">Your Comment:</label>
+                                          <textarea id="comment_${movie.id}" name="comment"></textarea>
+                                          <button type="submit">Submit</button>
+                                      </form>`;
+                catalogDiv.appendChild(movieDiv);
+            });
+
+            document.getElementById("catalogSection").style.display = "block";
+        }
+
+        function showSearch() {
+            document.getElementById("searchSection").style.display = "block";
+            document.getElementById("catalogSection").style.display = "none";
+        }
+
+        async function submitRating(event, movieId) {
+            event.preventDefault();
+            const userId = localStorage.getItem("user_id");
+            if (!userId) {
+                alert("You must be logged in to submit a rating.");
+                return;
+            }
+
+            const rating = document.getElementById(`rating_${movieId}`).value;
+            const comment = document.getElementById(`comment_${movieId}`).value;
+
+            
+            console.log("Datos a enviar:", { user_id: userId, movie_id: movieId, rating, comment });
+            if (!rating || !comment) {
+                alert("Please enter both a rating and a comment.");
+                return;
+            }
+
+            try {
+                const response = await fetch("http://localhost:5000/rate_movie", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ user_id: userId, movie_id: movieId, rating, comment })
+                });
+
+                const result = await response.json();
+                alert(result.message || result.error);
+            } catch (error) {
+                console.error("Error submitting rating:", error);
+                alert("There was an error submitting your rating. Please try again.");
+            }
+        }
+
+        async function searchMovie(event) {
+            event.preventDefault();
+
+            const title = document.getElementById("searchTitle").value;
+            const genre = document.getElementById("searchGenre").value;
+            const year = document.getElementById("searchYear").value;
+
+            try {
+                const response = await fetch(`http://localhost:5000/recommender?title=${encodeURIComponent(title)}&genre=${encodeURIComponent(genre)}&year=${year}`, {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" }
+                });
+
+                const movies = await response.json();
+                
+                displaySearchResults(movies);
+            } catch (error) {
+                console.error("Error fetching search results:", error);
+                alert("There was an error fetching search results. Please try again.");
+            }
+        }
+
+        function displaySearchResults(movies) {
+            const searchResultsDiv = document.getElementById("searchResults");
+            searchResultsDiv.innerHTML = "";
+
+            if (movies.length === 0) {
+                searchResultsDiv.innerHTML = "<p>No se encontraron resultados.</p>";
+                return;
+            }
+
+            movies.forEach(movie => {
+                let movieDiv = document.createElement("div");
+                movieDiv.className = "movie-item";
+                movieDiv.innerHTML = `<h3>${movie.title} </h3>
+                                      <p>Year: ${movie.releaseYear}</p>
+                                      <p>Genre: ${movie.genres}</p>
+                                      <p>Rating: ${movie.rating}</p>`;
+                                      
+                searchResultsDiv.appendChild(movieDiv);
+            });
+        }
+
+        
+
+
+        function logoutUser() {
+            localStorage.removeItem("user_id");
+
+            // Ocultar las secciones de registro e inicio de sesión
+            document.getElementById("registerSection").style.display = "none";
+            document.getElementById("loginSection").style.display = "none";
+            document.getElementById("authButtons").style.display = "flex";
+
+            // Ocultar las secciones después del inicio de sesión
+            document.getElementById("logoutSection").style.display = "none";
+            document.getElementById("catalogSection").style.display = "none";
+            document.getElementById("searchSection").style.display = "none";
+
+            // Limpiar el contenido del catálogo y de los resultados de búsqueda
+            document.getElementById("catalog").innerHTML = "";
+            document.getElementById("searchResults").innerHTML = "";
+
+            alert("You have been logged out.");
+        }
+
+    </script>
 </body>
 </html>
