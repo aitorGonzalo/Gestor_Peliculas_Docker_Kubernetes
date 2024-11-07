@@ -31,8 +31,7 @@ def recommender():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    # Construcción dinámica de la consulta
-    query = "SELECT title, releaseYear, genres, imdbAverageRating AS rating FROM movies WHERE 1=1"
+    query = "SELECT title, release_year AS releaseYear, genres, imdb_average_rating AS rating FROM movies WHERE 1=1"
     params = []
 
     if title:
@@ -42,10 +41,10 @@ def recommender():
         query += " AND genres LIKE %s"
         params.append(f"%{genre}%")
     if year:
-        query += " AND releaseYear = %s"
+        query += " AND release_year = %s"
         params.append(year)
 
-    query += " ORDER BY imdbAverageRating DESC LIMIT 10"
+    query += " ORDER BY imdb_average_rating DESC LIMIT 10"
     cursor.execute(query, params)
     movies = cursor.fetchall()
 
@@ -53,6 +52,7 @@ def recommender():
     conn.close()
 
     return jsonify(movies)
+
 
 # Ruta de registro
 @app.route('/register', methods=['POST'])
@@ -104,13 +104,15 @@ def catalog():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT id,title, releaseYear, genres, imdbAverageRating AS rating FROM movies")
+    # Asegúrate de usar los nombres de columnas actualizados
+    cursor.execute("SELECT id, title, release_year AS releaseYear, genres, imdb_average_rating AS rating FROM movies")
     movies = cursor.fetchall()
 
     cursor.close()
     conn.close()
 
     return jsonify(movies)
+
 
 @app.route('/rate_movie', methods=['POST'])
 def rate_movie():

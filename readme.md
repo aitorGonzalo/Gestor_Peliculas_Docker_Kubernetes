@@ -1,6 +1,24 @@
 ## Docker Hub Repository
 
-La imagen del servicio de recomendaciones está disponible en Docker Hub:
-- [movie_catalog_recommender en Docker Hub](https://hub.docker.com/r/aitorgonzalo/movie_catalog_recommender)
+Para la cargar de la base de datos en docker
+Entramos a mysql
 
-Catalogo de peliculas
+docker exec -it mysql_db mysql -u aitor -p --local-infile=1
+
+ y desde mysql ejecutamos
+ SOURCE /var/lib/mysql-files/db_init.sql;
+
+--Para construir la imagen de apache
+desde el directorio principal-> docker build -f apache/Dockerfile -t aitorgonzalo/apache-web:latest .
+
+
+Para cargar datos en kubernetes
+kubectl get pods
+mysql -u root -p --local-infile=1
+SET GLOBAL local_infile = 1;
+SOURCE /docker-entrypoint-initdb.d/db_init.sql;
+
+
+
+
+

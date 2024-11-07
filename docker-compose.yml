@@ -1,4 +1,4 @@
-version: '3.8'
+
 
 services:
   web:
@@ -8,6 +8,8 @@ services:
       - "8080:80"
     volumes:
       - ./app:/usr/local/apache2/htdocs/
+    environment:
+      - FLASK_SERVICE_URL=http://recommender:5000  # URL del servicio Flask en Docker Compose
     networks:
       - app-network
 
@@ -15,30 +17,30 @@ services:
     image: mysql:latest
     container_name: mysql_db
     environment:
-      MYSQL_ROOT_PASSWORD: 1234
-      MYSQL_DATABASE: movie_db
-      MYSQL_USER: aitor
-      MYSQL_PASSWORD: 1234
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER:  ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./db-config/my.cnf:/etc/mysql/my.cnf
       - ./db/data.csv:/var/lib/mysql-files/data.csv
+      - ./scripts/db_init.sql:/var/lib/mysql-files/db_init.sql
     networks:
       - app-network
 
   recommender:
-    build:
-      context: ./recommender  # Apunta a la carpeta donde está el Dockerfile
+    image: aitorgonzalo/recommender:latest 
     container_name: movie_recommender
     depends_on:
       - db
     environment:
       DB_HOST: db
-      DB_NAME: movie_db
-      DB_PASSWORD: 1234
-      DB_USER: aitor
+      DB_NAME: ${MYSQL_DATABASE}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+      DB_USER: ${MYSQL_USER}
     networks:
       - app-network
     ports:
