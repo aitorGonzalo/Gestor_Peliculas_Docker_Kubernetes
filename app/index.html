@@ -189,6 +189,8 @@
     </div>
 
     <script>
+        let flaskServiceURL = "http://localhost:5000";
+             
         function showRegister() {
             document.getElementById("registerSection").style.display = "block";
             document.getElementById("loginSection").style.display = "none";
@@ -204,7 +206,7 @@
             const email = document.getElementById("registerEmail").value;
             const password = document.getElementById("registerPassword").value;
 
-            const response = await fetch("http://localhost:5000/register", {
+            const response = await fetch(`${flaskServiceURL}/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username, email, password })
@@ -217,7 +219,7 @@
             const username = document.getElementById("loginUsername").value;
             const password = document.getElementById("loginPassword").value;
 
-            const response = await fetch("http://localhost:5000/login", {
+            const response = await fetch(`${flaskServiceURL}/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username, password })
@@ -236,7 +238,7 @@
         }
 
         async function loadCatalog() {
-            const response = await fetch("http://localhost:5000/catalog");
+            const response = await fetch(`${flaskServiceURL}/catalog`);
             const movies = await response.json();
 
             let catalogDiv = document.getElementById("catalog");
@@ -286,8 +288,7 @@
             }
 
             try {
-                const response = await fetch("http://localhost:5000/rate_movie", {
-                    method: "POST",
+                const response = await fetch(`${flaskServiceURL}/rate_movie`, {                    method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ user_id: userId, movie_id: movieId, rating, comment })
                 });
@@ -308,7 +309,7 @@
             const year = document.getElementById("searchYear").value;
 
             try {
-                const response = await fetch(`http://localhost:5000/recommender?title=${encodeURIComponent(title)}&genre=${encodeURIComponent(genre)}&year=${year}`, {
+                const response = await fetch(`${flaskServiceURL}/recommender?title=${encodeURIComponent(title)}&genre=${encodeURIComponent(genre)}&year=${year}`, {
                     method: "GET",
                     headers: { "Content-Type": "application/json" }
                 });
