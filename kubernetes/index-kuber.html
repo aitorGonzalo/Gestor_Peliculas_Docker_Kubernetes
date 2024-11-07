@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HboWorld - Movie Catalog</title>
+    <title>SkyWorld - Movie Catalog</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -60,7 +60,7 @@
             width: 90%;
             max-width: 800px;
             height: 400px;
-            background: url('galaxy-background.png') no-repeat center center;
+            background: url('galaxy.png') no-repeat center center;
             background-size: cover;
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
@@ -110,7 +110,7 @@
 <body>
 
     <div id="authSection">
-        <h1>Welcome to HboWorld!</h1>
+        <h1>Welcome to SkyWorld!</h1>
         <p>Movies and series without limits</p>
 
         <div id="authButtons">
@@ -185,11 +185,11 @@
         <p>If you have any suggestions or need assistance, feel free to contact us!</p>
         <p>We are always happy to hear from our users.</p>
         <p>Phone: +34 663 644 655</p>
-        <p>Email: HboWorld@gmail.com</p>
+        <p>Email: SKyWorld@gmail.com</p>
     </div>
 
     <script>
-       let flaskServiceURL = "http://192.168.49.2:30001";
+       let flaskServiceURL = `http://${window.location.hostname}:30001`;
 
         function showRegister() {
             document.getElementById("registerSection").style.display = "block";
@@ -248,16 +248,16 @@
                 let movieDiv = document.createElement("div");
                 movieDiv.className = "movie-item";
                 movieDiv.innerHTML = `<h3>${movie.title}</h3>
-                                    <p>Year: ${movie.release_year}</p>
-                                    <p>Genre: ${movie.genres}</p>
-                                    <p>Rating: ${movie.imdb_average_rating}</p>
-                                    <form onsubmit="submitRating(event, ${movie.id})">
-                                        <label for="rating">Your Rating (1-10):</label>
-                                        <input type="number" id="rating_${movie.id}" name="rating" min="1" max="10" step="0.5" required>
-                                        <label for="comment">Your Comment:</label>
-                                        <textarea id="comment_${movie.id}" name="comment"></textarea>
-                                        <button type="submit">Submit</button>
-                                    </form>`;
+                                      <p>Year: ${movie.releaseYear}</p>
+                                      <p>Genre: ${movie.genres}</p>
+                                      <p>Rating: ${movie.rating}</p>
+                                      <form onsubmit="submitRating(event, ${movie.id})">
+                                          <label for="rating">Your Rating (1-10):</label>
+                                          <input type="number" id="rating_${movie.id}" name="rating" min="1" max="10" step="0.5" required>
+                                          <label for="comment">Your Comment:</label>
+                                          <textarea id="comment_${movie.id}" name="comment"></textarea>
+                                          <button type="submit">Submit</button>
+                                      </form>`;
                 catalogDiv.appendChild(movieDiv);
             });
 
@@ -336,14 +336,15 @@
             movies.forEach(movie => {
                 let movieDiv = document.createElement("div");
                 movieDiv.className = "movie-item";
-                movieDiv.innerHTML = `<h3>${movie.title}</h3>
-                                    <p>Year: ${movie.release_year}</p>
-                                    <p>Genre: ${movie.genres}</p>
-                                    <p>Rating: ${movie.imdb_average_rating}</p>`;
-                                    
+                movieDiv.innerHTML = `<h3>${movie.title} </h3>
+                                      <p>Year: ${movie.releaseYear}</p>
+                                      <p>Genre: ${movie.genres}</p>
+                                      <p>Rating: ${movie.rating}</p>`;
+                                      
                 searchResultsDiv.appendChild(movieDiv);
             });
         }
+
 
 
 

@@ -14,7 +14,7 @@ desde el directorio principal-> docker build -f apache/Dockerfile -t aitorgonzal
 
 Para cargar datos en kubernetes
 kubectl get pods
-mysql -u root -p --local-infile=1
+kubectl exec -it (pod-mysql) -- mysql -u root -p --local-infile=1
 SET GLOBAL local_infile = 1;
 SOURCE /docker-entrypoint-initdb.d/db_init.sql;
 
