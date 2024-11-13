@@ -13,9 +13,13 @@ desde el directorio principal-> docker build -f apache/Dockerfile -t aitorgonzal
 
 
 Para cargar datos en kubernetes
+minikube start 
+cd carpeta kubernetes
+kubectl apply -f .
 kubectl get pods
+kubectl cp ../db/data.csv (pod-mysql) :/var/lib/mysql-files/data.csv
 kubectl exec -it (pod-mysql) -- mysql -u root -p --local-infile=1
-SET GLOBAL local_infile = 1;
+SET GLOBAL local_infile = 1;(en principio deberia estar activado)
 SOURCE /docker-entrypoint-initdb.d/db_init.sql;
 
 

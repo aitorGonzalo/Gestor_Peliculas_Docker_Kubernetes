@@ -27,6 +27,7 @@ services:
       - ./db-config/my.cnf:/etc/mysql/my.cnf
       - ./db/data.csv:/var/lib/mysql-files/data.csv
       - ./scripts/db_init.sql:/var/lib/mysql-files/db_init.sql
+      #- ./scripts/db_init.sql:/docker-entrypoint-initdb.d/db.sql
     networks:
       - app-network
 
@@ -37,15 +38,21 @@ services:
       - db
     environment:
       DB_HOST: db
-      DB_NAME: ${MYSQL_DATABASE}
-      DB_PASSWORD: ${MYSQL_PASSWORD}
-      DB_USER: ${MYSQL_USER}
+      DB_NAME: movie_db
+      DB_PASSWORD: 1234
+      DB_USER: root
+    volumes:
+      - ./scripts/init_db.py:/app/init_db.py
+      - ./scripts/db_init.sql:/var/lib/mysql-files/db_init.sql
+      - ./db/data.csv:/var/lib/mysql-files/data.csv  # Monta data.csv en movie_recommender también
+    command: >
+      sh -c "python /app/init_db.py && flask run --host=0.0.0.0 --port=5000"
     networks:
       - app-network
     ports:
       - "5000:5000"
 
-  
+    
       
 networks:
   app-network:
