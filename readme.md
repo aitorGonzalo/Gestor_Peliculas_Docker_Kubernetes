@@ -13,8 +13,8 @@ desde el directorio principal-> docker build -f apache/Dockerfile -t aitorgonzal
 
 
 Para cargar datos en kubernetes
-minikube start 
 cd carpeta kubernetes
+minikube start 
 kubectl apply -f .
 kubectl get pods
 kubectl cp ../db/data.csv (pod-mysql) :/var/lib/mysql-files/data.csv
