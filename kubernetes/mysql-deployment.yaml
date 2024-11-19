@@ -35,22 +35,8 @@ spec:
         - mountPath: "/etc/mysql/conf.d/my.cnf"
           subPath: my.cnf
           name: init-db
-        - mountPath: "/var/lib/mysql-files"  # Montar la carpeta donde está data.csv
+        - mountPath: "/var/lib/mysql-files"
           name: csv-storage
-        livenessProbe:
-          exec:
-            command: ["mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "-p1234"]
-          initialDelaySeconds: 30
-          periodSeconds: 30
-          timeoutSeconds: 5
-          failureThreshold: 3
-        readinessProbe:
-          exec:
-            command: ["mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "-p1234"]
-          initialDelaySeconds: 10
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 3
       volumes:
       - name: mysql-persistent-storage
         persistentVolumeClaim:
@@ -110,7 +96,7 @@ data:
 
     USE movie_db;
 
-    CREATE TABLE movies (
+    CREATE TABLE IF NOT EXISTS movies (
         id INT AUTO_INCREMENT PRIMARY KEY,
         title VARCHAR(255) NOT NULL,
         type VARCHAR(50),
