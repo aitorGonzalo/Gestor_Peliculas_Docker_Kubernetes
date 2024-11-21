@@ -52,7 +52,20 @@ services:
     ports:
       - "5000:5000"
 
-    
+  fastapi:
+    image: aitorgonzalo/movie_catalog-fastapi:latest
+    container_name: fastapi_service
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_NAME: movie_db
+      DB_USER: aitor
+      DB_PASSWORD: 1234
+    ports:
+      - "8000:8000"
+    networks:
+      - app-network   
       
 networks:
   app-network:

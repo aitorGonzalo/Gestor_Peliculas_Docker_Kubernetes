@@ -152,6 +152,7 @@
         <button onclick="logoutUser()">Logout</button>
         <button onclick="loadCatalog()">Show Movie Catalog</button>
         <button onclick="showSearch()">Search Movie</button> <!-- Nuevo botón de búsqueda -->
+        <button onclick="showSimilarSearch()">Find Similar Movies</button> <!-- Botón añadido -->
     </div>
 
     <!-- Catálogo de Películas -->
@@ -179,7 +180,16 @@
         <!-- Resultados de la búsqueda -->
         <div id="searchResults" style="margin-top: 20px;"></div>
     </div>
-
+    <!-- Nueva sección para buscar películas similares -->
+    <div id="similarSection" style="display: none; margin-top: 20px;">
+        <h2>Find Similar Movies</h2>
+        <form onsubmit="searchSimilarMovies(event)">
+            <label for="similarTitle">Movie Title:</label>
+            <input type="text" id="similarTitle" name="title" placeholder="Enter movie title">
+            <button type="submit">Find Similar Movies</button>
+        </form>
+        <div id="similarResults" style="margin-top: 20px;"></div>
+    </div>
     <!-- Sección de contacto -->
     <div id="contactSection">
         <p>If you have any suggestions or need assistance, feel free to contact us!</p>
@@ -335,16 +345,73 @@
             movies.forEach(movie => {
                 let movieDiv = document.createElement("div");
                 movieDiv.className = "movie-item";
-                movieDiv.innerHTML = `<h3>${movie.title} </h3>
-                                      <p>Year: ${movie.releaseYear}</p>
-                                      <p>Genre: ${movie.genres}</p>
-                                      <p>Rating: ${movie.rating}</p>`;
-                                      
+                movieDiv.innerHTML = `
+                    <h3>${movie.title}</h3>
+                    <p>Year: ${movie.releaseYear}</p>
+                    <p>Genre: ${movie.genres}</p>
+                    <p>Rating: ${movie.rating}</p>
+                    
+                `;
                 searchResultsDiv.appendChild(movieDiv);
             });
         }
+        async function searchSimilarMovies(event) {
+            event.preventDefault(); // Evitar que el formulario recargue la página
 
+            const title = document.getElementById("similarTitle").value; // Obtener el título ingresado
+            if (!title) {
+                alert("Please enter a movie title.");
+                return;
+            }
+
+            const flaskServiceURL = "http://localhost:8000"; // Cambia si el puerto o ruta es diferente
+
+            try {
+                const response = await fetch(`${flaskServiceURL}/similar_movies?title=${encodeURIComponent(title)}&rating_tolerance=0.5`);
+                const result = await response.json();
+
+                displaySimilarResults(result);
+            } catch (error) {
+                console.error("Error fetching similar movies:", error);
+                alert("An error occurred while searching for similar movies.");
+            }
+        }
         
+      
+
+
+        function showSimilarSearch() {
+            document.getElementById("searchSection").style.display = "none";
+            document.getElementById("catalogSection").style.display = "none";
+            document.getElementById("similarSection").style.display = "block"; // Mostrar la nueva sección
+        }
+
+        function displaySimilarResults(data) {
+            const similarResultsDiv = document.getElementById("similarResults");
+            similarResultsDiv.innerHTML = "";
+
+            if (!data || !data.similar_movies || data.similar_movies.length === 0) {
+                similarResultsDiv.innerHTML = "<p>No similar movies found.</p>";
+                return;
+            }
+
+            similarResultsDiv.innerHTML = `
+                <h3>Similar Movies to "${data.reference_movie.title}"</h3>
+                <p>Genre: ${data.reference_movie.genres}, Rating: ${data.reference_movie.rating}</p>
+            `;
+
+            data.similar_movies.forEach(movie => {
+                const movieDiv = document.createElement("div");
+                movieDiv.className = "movie-item";
+                movieDiv.innerHTML = `
+                    <h3>${movie.title}</h3>
+                    <p>Year: ${movie.release_year}</p>
+                    <p>Genre: ${movie.genres}</p>
+                    <p>Rating: ${movie.rating}</p>
+                `;
+                similarResultsDiv.appendChild(movieDiv);
+            });
+        }
 
 
         function logoutUser() {
@@ -359,6 +426,7 @@
             document.getElementById("logoutSection").style.display = "none";
             document.getElementById("catalogSection").style.display = "none";
             document.getElementById("searchSection").style.display = "none";
+            document.getElementById("similarSection").style.display = "none"; 
 
             // Limpiar el contenido del catálogo y de los resultados de búsqueda
             document.getElementById("catalog").innerHTML = "";
