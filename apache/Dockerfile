@@ -6,8 +6,7 @@ RUN apt-get update && apt-get install -y \
     curl \
     libcurl4-openssl-dev \
     procps \
-    psmisc \
-    netcat \  
+    psmisc \ 
     && docker-php-ext-install curl \
     && rm -rf /var/lib/apt/lists/*
 
