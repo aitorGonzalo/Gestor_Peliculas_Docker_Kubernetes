@@ -104,15 +104,23 @@ def catalog():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-   
-    cursor.execute("SELECT id, title, release_year AS releaseYear, genres, imdb_average_rating AS rating FROM movies")
+    
+    start = int(request.args.get('start', 0))  # Valor por defecto: 0
+    limit = int(request.args.get('limit', 5))  # Valor por defecto: 5
+
+    
+    query = """
+        SELECT id, title, release_year AS releaseYear, genres, imdb_average_rating AS rating
+        FROM movies
+        LIMIT %s OFFSET %s
+    """
+    cursor.execute(query, (limit, start))
     movies = cursor.fetchall()
 
     cursor.close()
     conn.close()
 
     return jsonify(movies)
-
 
 @app.route('/rate_movie', methods=['POST'])
 def rate_movie():
