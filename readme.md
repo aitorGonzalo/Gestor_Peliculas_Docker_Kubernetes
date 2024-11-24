@@ -1,7 +1,7 @@
 Proyecto: Gestión de Películas en Docker y Kubernetes
 
 Este proyecto implementa una aplicación web que permite gestionar un catálogo de películas, con funcionalidades como registro de usuarios, inicio de sesión, reseñas de películas, búsqueda avanzada y recomendaciones personalizadas. El despliegue del proyecto puede realizarse tanto en Docker como en Kubernetes.
-Repositorio Docker Hub
+
 
 El proyecto está configurado para funcionar con Docker Compose, simplificando el despliegue. Para iniciar el proyecto, ejecuta:
 
