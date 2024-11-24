@@ -77,6 +77,18 @@
             margin: 20px auto;
         }
 
+        form.review-form {
+            background: rgba(0, 0, 0, 0.7); /* Contorno negro */
+            padding: 8px; /* Reduce el espacio interno */
+            border-radius: 6px; /* Reduce el redondeo */
+            max-width: 220px; /* Reduce el ancho del formulario */
+            width: 100%;
+            text-align: center;
+            margin: 5px auto; /* Reduce el margen */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* Ajusta la sombra */
+        }
+
+
         label, input, button, textarea {
             display: block;
             width: 100%;
@@ -105,6 +117,21 @@
             color: #aaaaaa;
             font-size: 0.9em;
         }
+        .review-button {
+            background-color: #e50914;
+            color: white;
+            padding: 5px 10px;
+            font-size: 0.8em;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .review-button:hover {
+            background-color: #b0070e;
+        }
+
     </style>
 </head>
 <body>
@@ -159,8 +186,9 @@
     <div id="catalogSection" style="display: none;">
         <h2>Movie Catalog</h2>
         <div id="catalog"></div>
+        <button id="loadMoreButton" onclick="loadMoreMovies()">Load More</button>
     </div>
-
+    
     <!-- Buscador de Películas -->
     <div id="searchSection" style="display: none;">
         <h2>Search Film</h2>
@@ -247,32 +275,57 @@
             }
         }
 
-        async function loadCatalog() {
-            const response = await fetch(`${flaskServiceURL}/catalog`);
+        let currentPage = 0; 
+        const itemsPerPage = 5; 
+
+      
+        async function loadCatalog(page = 0) {
+            const start = page * itemsPerPage; 
+            const response = await fetch(`${flaskServiceURL}/catalog?start=${start}&limit=${itemsPerPage}`);
             const movies = await response.json();
 
-            let catalogDiv = document.getElementById("catalog");
-            catalogDiv.innerHTML = "";
+            const catalogDiv = document.getElementById("catalog");
 
+            // Procesar y agregar las películas al catálogo
             movies.forEach(movie => {
-                let movieDiv = document.createElement("div");
+                const movieDiv = document.createElement("div");
                 movieDiv.className = "movie-item";
-                movieDiv.innerHTML = `<h3>${movie.title}</h3>
-                                      <p>Year: ${movie.releaseYear}</p>
-                                      <p>Genre: ${movie.genres}</p>
-                                      <p>Rating: ${movie.rating}</p>
-                                      <form onsubmit="submitRating(event, ${movie.id})">
-                                          <label for="rating">Your Rating (1-10):</label>
-                                          <input type="number" id="rating_${movie.id}" name="rating" min="1" max="10" step="0.5" required>
-                                          <label for="comment">Your Comment:</label>
-                                          <textarea id="comment_${movie.id}" name="comment"></textarea>
-                                          <button type="submit">Submit</button>
-                                      </form>`;
+                movieDiv.innerHTML = `
+                    <h3>${movie.title}</h3>
+                    <p>Year: ${movie.releaseYear}</p>
+                    <p>Genre: ${movie.genres}</p>
+                    <p>Rating: ${movie.rating}</p>
+                    <form class="review-form" onsubmit="submitRating(event, ${movie.id})">
+                        <label for="rating_${movie.id}">Your Rating (1-10):</label>
+                        <input type="number" id="rating_${movie.id}" name="rating" min="1" max="10" step="0.5" required>
+                        <label for="comment_${movie.id}">Your Comment:</label>
+                        <textarea id="comment_${movie.id}" name="comment"></textarea>
+                        <button class="review-button" type="submit">Submit</button>
+                    </form>
+                `;
                 catalogDiv.appendChild(movieDiv);
             });
 
-            document.getElementById("catalogSection").style.display = "block";
+
+
+            // Controlar la visibilidad del botón "Load More"
+            if (movies.length < itemsPerPage) {
+                document.getElementById("loadMoreButton").style.display = "none"; 
+            } else {
+                document.getElementById("loadMoreButton").style.display = "block";
+            }
+
+            document.getElementById("catalogSection").style.display = "block"; 
         }
+
+
+       
+        function loadMoreMovies() {
+            currentPage += 1; 
+            loadCatalog(currentPage); 
+        }
+
+
 
         function showSearch() {
             document.getElementById("searchSection").style.display = "block";
