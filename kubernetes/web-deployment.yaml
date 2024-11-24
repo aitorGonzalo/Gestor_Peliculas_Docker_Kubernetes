@@ -14,34 +14,25 @@ spec:
     spec:
       containers:
       - name: apache
-        image: aitorgonzalo/apache-web:latest  # Usa la imagen actualizada con ambos índices
+        image: aitorgonzalo/apache-web_kubernetes:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
         env:
         - name: FLASK_SERVICE_URL
-          value: "http://flask-service:5000"  # URL del servicio Flask en el entorno Kubernetes
-        command: ["/usr/local/apache2/bin/httpd"]  # Comando explícito para iniciar Apache
-        args:
-          - "-D"
-          - "FOREGROUND"
-          - "-D"
-          - "KUBERNETES"
+          value: "http://flask-service:5000"  
         livenessProbe:
-          exec:
-            command:
-              - "/bin/sh"
-              - "-c"
-              - "curl -f http://localhost:80 || exit 1"
+          httpGet:
+            path: /
+            port: 80
           initialDelaySeconds: 45
           periodSeconds: 15
           timeoutSeconds: 5
           failureThreshold: 5
         readinessProbe:
-          exec:
-            command:
-              - "/bin/sh"
-              - "-c"
-              - "mysqladmin ping -h mysql-service -u root -p1234 || exit 1"
+          httpGet:
+            path: /
+            port: 80
           initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5

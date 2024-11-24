@@ -8,10 +8,10 @@ app = FastAPI()
 # Middleware para permitir CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Permitir solicitudes desde cualquier origen (puedes especificar dominios aquí)
+    allow_origins=["*"],  
     allow_credentials=True,
-    allow_methods=["*"],  # Permitir todos los métodos HTTP
-    allow_headers=["*"],  # Permitir todos los encabezados
+    allow_methods=["*"],  
+    allow_headers=["*"],  
 )
 
 # Configuración de conexión a la base de datos MySQL

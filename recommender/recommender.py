@@ -6,7 +6,7 @@ import os
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
-CORS(app)  # Permitir solicitudes CORS desde cualquier origen
+CORS(app)  
 
 # Configuración de conexión a MySQL
 db_config = {
@@ -57,7 +57,7 @@ def recommender():
 # Ruta de registro
 @app.route('/register', methods=['POST'])
 def register():
-    print("Ruta /register llamada")  # Añadir este mensaje
+    print("Ruta /register llamada")  
     data = request.get_json()
     username = data.get('username')
     email = data.get('email')
@@ -91,7 +91,7 @@ def login():
         user = cursor.fetchone()
 
         if user and check_password_hash(user['password'], password):
-            # Devuelve el user_id junto con el mensaje de éxito
+           
             return jsonify({"message": "Login successful", "user_id": user['id']}), 200
         else:
             return jsonify({"error": "Invalid username or password"}), 401
@@ -104,7 +104,7 @@ def catalog():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    # Asegúrate de usar los nombres de columnas actualizados
+   
     cursor.execute("SELECT id, title, release_year AS releaseYear, genres, imdb_average_rating AS rating FROM movies")
     movies = cursor.fetchall()
 
@@ -117,16 +117,16 @@ def catalog():
 @app.route('/rate_movie', methods=['POST'])
 def rate_movie():
     data = request.get_json()
-    print("Datos recibidos en /rate_movie:", data)  # Verificar los datos en el log
+    print("Datos recibidos en /rate_movie:", data)  
 
     user_id = data.get('user_id')
     movie_id = data.get('movie_id')
     rating = data.get('rating')
     comment = data.get('comment')
 
-    # Verificar que todos los datos están presentes
+   
     if not user_id or not movie_id or rating is None or not comment:
-        print("Datos incompletos:", data)  # Imprime los datos incompletos
+        print("Datos incompletos:", data)  
         return jsonify({"error": "Datos incompletos"}), 400
 
     if not (1 <= int(float(rating)) <= 10):
@@ -145,3 +145,41 @@ def rate_movie():
     finally:
         cursor.close()
         conn.close()
+
+@app.route('/add_movie', methods=['POST'])
+def add_movie():
+    data = request.get_json()
+
+    
+    required_fields = ["title", "type", "genres", "release_year", "imdb_id", "imdb_average_rating", "imdb_num_votes", "available_countries"]
+    if not all(field in data for field in required_fields):
+        return jsonify({"error": "Datos incompletos"}), 400
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute(
+            """
+            INSERT INTO movies (title, type, genres, release_year, imdb_id, imdb_average_rating, imdb_num_votes, available_countries)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            """,
+            (
+                data["title"],
+                data["type"],
+                data["genres"],
+                data["release_year"],
+                data["imdb_id"],
+                data["imdb_average_rating"],
+                data["imdb_num_votes"],
+                data["available_countries"]
+            )
+        )
+        conn.commit()
+        return jsonify({"message": "Película añadida exitosamente"}), 201
+    except mysql.connector.Error as err:
+        return jsonify({"error": str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+

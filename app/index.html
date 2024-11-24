@@ -151,8 +151,8 @@
     <div id="logoutSection" style="display: none;">
         <button onclick="logoutUser()">Logout</button>
         <button onclick="loadCatalog()">Show Movie Catalog</button>
-        <button onclick="showSearch()">Search Movie</button> <!-- Nuevo botón de búsqueda -->
-        <button onclick="showSimilarSearch()">Find Similar Movies</button> <!-- Botón añadido -->
+        <button onclick="showSearch()">Search Movie</button> 
+        <button onclick="showSimilarSearch()">Find Similar Movies</button> 
     </div>
 
     <!-- Catálogo de Películas -->
@@ -356,15 +356,15 @@
             });
         }
         async function searchSimilarMovies(event) {
-            event.preventDefault(); // Evitar que el formulario recargue la página
+            event.preventDefault(); 
 
-            const title = document.getElementById("similarTitle").value; // Obtener el título ingresado
+            const title = document.getElementById("similarTitle").value; 
             if (!title) {
                 alert("Please enter a movie title.");
                 return;
             }
 
-            const flaskServiceURL = "http://localhost:8000"; // Cambia si el puerto o ruta es diferente
+            const flaskServiceURL = "http://localhost:8000"; 
 
             try {
                 const response = await fetch(`${flaskServiceURL}/similar_movies?title=${encodeURIComponent(title)}&rating_tolerance=0.5`);
@@ -383,7 +383,7 @@
         function showSimilarSearch() {
             document.getElementById("searchSection").style.display = "none";
             document.getElementById("catalogSection").style.display = "none";
-            document.getElementById("similarSection").style.display = "block"; // Mostrar la nueva sección
+            document.getElementById("similarSection").style.display = "block"; 
         }
 
         function displaySimilarResults(data) {

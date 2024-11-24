@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: generate-movies
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: generate-movies
+  template:
+    metadata:
+      labels:
+        app: generate-movies
+    spec:
+      containers:
+      - name: generate-movies
+        image: aitorgonzalo/generate-movies:latest
+        command: ["php", "/app/generate_movies.php"]  
+        env:
+        - name: FLASK_SERVICE_URL
+          value: "http://flask-service:5000"  

@@ -1,13 +1,37 @@
-FROM httpd:latest
+FROM php:8.1-apache
 
-# Instalar herramientas necesarias: curl, mysql-client, y killall (en procps)
-RUN apt-get update && \
-    apt-get install -y curl default-mysql-client procps && \
-    rm -rf /var/lib/apt/lists/*
 
-# Copiar la aplicación y el índice
-COPY app/ /usr/local/apache2/htdocs/
-COPY kubernetes/index-kuber.html /usr/local/apache2/htdocs/index.html
+RUN apt-get update && apt-get install -y \
+    unzip \
+    curl \
+    libcurl4-openssl-dev \
+    procps \
+    psmisc \
+    netcat \  
+    && docker-php-ext-install curl \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copiar el archivo de configuración adicional en conf.d en lugar de sobrescribir httpd.conf
-COPY kubernetes/kubernetes.conf /usr/local/apache2/conf/conf.d/kubernetes.conf
+
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+RUN a2enmod rewrite
+
+# Copiar la aplicación y los archivos adicionales
+COPY app/ /var/www/html/
+COPY kubernetes/index-kuber.html /var/www/html/index.html
+COPY kubernetes/kubernetes.conf /etc/apache2/conf-available/kubernetes.conf
+
+
+RUN a2enconf kubernetes
+
+
+WORKDIR /var/www/html
+
+
+RUN composer require fakerphp/faker
+
+
+EXPOSE 80
+
+
+CMD ["apache2-foreground"]

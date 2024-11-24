@@ -19,7 +19,7 @@ spec:
         - containerPort: 5000
         env:
         - name: DB_HOST
-          value: "mysql-service"  # Nombre del servicio MySQL en Kubernetes
+          value: "mysql-service"  
         - name: DB_NAME
           value: "movie_db"
         - name: DB_USER

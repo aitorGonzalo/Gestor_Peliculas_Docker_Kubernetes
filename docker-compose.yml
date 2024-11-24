@@ -1,14 +1,13 @@
-
 services:
   web:
-    image: httpd:latest
+    image: aitorgonzalo/movie_catalog_web:latest
     container_name: apache_web
     ports:
       - "8080:80"
     volumes:
       - ./app:/usr/local/apache2/htdocs/
     environment:
-      - FLASK_SERVICE_URL=http://recommender:5000  # URL del servicio Flask en Docker Compose
+      - FLASK_SERVICE_URL=http://recommender:5000  
     networks:
       - app-network
 
@@ -27,12 +26,12 @@ services:
       - ./db-config/my.cnf:/etc/mysql/my.cnf
       - ./db/data.csv:/var/lib/mysql-files/data.csv
       - ./scripts/db_init.sql:/var/lib/mysql-files/db_init.sql
-      #- ./scripts/db_init.sql:/docker-entrypoint-initdb.d/db.sql
+      
     networks:
       - app-network
 
   recommender:
-    image: aitorgonzalo/recommender:latest 
+    image: aitorgonzalo/recommender:latest
     container_name: movie_recommender
     depends_on:
       - db
@@ -44,7 +43,7 @@ services:
     volumes:
       - ./scripts/init_db.py:/app/init_db.py
       - ./scripts/db_init.sql:/var/lib/mysql-files/db_init.sql
-      - ./db/data.csv:/var/lib/mysql-files/data.csv  # Monta data.csv en movie_recommender también
+      - ./db/data.csv:/var/lib/mysql-files/data.csv  
     command: >
       sh -c "python /app/init_db.py && flask run --host=0.0.0.0 --port=5000"
     networks:
@@ -66,6 +65,16 @@ services:
       - "8000:8000"
     networks:
       - app-network   
+   
+  generator:
+    image: aitorgonzalo/generate-movies:latest
+    container_name: movie_generator
+    depends_on:
+      - recommender
+    environment:
+      - FLASK_SERVICE_URL=http://recommender:5000
+    networks:
+      - app-network  
       
 networks:
   app-network:
