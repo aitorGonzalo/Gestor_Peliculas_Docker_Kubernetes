@@ -1,1 +1,78 @@
-ProyectoAs
+Proyecto: Gestión de Películas en Docker y Kubernetes
+
+Este proyecto implementa una aplicación web que permite gestionar un catálogo de películas, con funcionalidades como registro de usuarios, inicio de sesión, reseñas de películas, búsqueda avanzada y recomendaciones personalizadas. El despliegue del proyecto puede realizarse tanto en Docker como en Kubernetes.
+
+El proyecto está configurado para funcionar con Docker Compose, simplificando el despliegue. Para iniciar el proyecto, ejecuta:
+
+docker compose up --build
+
+Para desplegar la aplicación en Kubernetes, sigue estos pasos:
+
+Dirígete a la carpeta de Kubernetes:
+
+cd kubernetes
+
+Inicia Minikube:
+
+minikube start
+
+Elimina cualquier despliegue previo (opcional):
+
+kubectl delete deployment --all
+
+Aplica los manifiestos de Kubernetes:
+
+kubectl apply -f .
+
+Verifica los pods en ejecución:
+
+kubectl get pods
+
+Copia los datos del archivo CSV al pod de MySQL:
+
+kubectl cp ../db/data.csv mysql-pod:/var/lib/mysql-files/data.csv
+
+Ingresa al pod de MySQL para cargar los datos:
+
+kubectl exec -it mysql-pod -- mysql -u root -p --local-infile=1
+
+(Opcional) Asegúrate de que la opción local_infile esté activada:
+
+SET GLOBAL local_infile = 1;
+
+Ejecuta el script de inicialización para crear y poblar la base de datos:
+
+SOURCE /docker-entrypoint-initdb.d/db_init.sql;
+
+Pruebas del Healthcheck en Kubernetes
+
+Para probar el mecanismo de Healthcheck configurado en el despliegue web:
+
+Accede al contenedor de Apache:
+
+kubectl exec -it apache-web- -- /bin/sh
+
+Simula un fallo deteniendo el servicio de Apache:
+
+service apache2 stop
+
+Observa cómo Kubernetes reinicia automáticamente el pod fallido:
+
+kubectl get pods
+
+Verifica los logs del contenedor para confirmar el reinicio exitoso de Apache:
+
+kubectl logs apache-web-
+
+Los logs mostrarán algo similar a:
+
+[Sat Nov 23 18:37:36.014780 2024] [mpm_prefork:notice] [pid 1:tid 1] AH00163: Apache/2.4.62 (Debian) PHP/8.1.31 configured -- resuming normal operations
+[Sat Nov 23 18:37:36.014831 2024] [core:notice] [pid 1:tid 1] AH00094: Command line: 'apache2 -D FOREGROUND'
+
+Además, las líneas que indican las solicitudes de Kubernetes confirman que las sondas de liveness y readiness están activas:
+
+10.244.0.1 - - [23/Nov/2024:18:38:06 +0000] "GET / HTTP/1.1" 200 14037 "-" "kube-probe/1.31"
+
+Resumen del Healthcheck
+
+Este proceso demuestra que Kubernetes detecta fallos en el servicio, reinicia el contenedor automáticamente y valida su disponibilidad antes de redirigir tráfico nuevamente al pod, asegurando la resiliencia de la aplicación.
